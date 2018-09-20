@@ -649,10 +649,6 @@
                 });
                 window.dispatchEvent(event);
             });
-            eventBus.on('attachmentsloaded', function (evt) {
-                var event = document.createEvent('CustomEvent');
-                event.initCustomEvent('attachmentsloaded', true, true, {attachmentsCount: evt.attachmentsCount});
-            });
             eventBus.on('sidebarviewchanged', function (evt) {
                 var event = document.createEvent('CustomEvent');
                 event.initCustomEvent('sidebarviewchanged', true, true, {view: evt.view});
@@ -5491,10 +5487,6 @@
             }, {
                 key: '_dispatchEvent',
                 value: function _dispatchEvent(attachmentsCount) {
-                    this.eventBus.dispatch('attachmentsloaded', {
-                        source: this,
-                        attachmentsCount: attachmentsCount
-                    });
                     this._renderedCapability.resolve();
                 }
             }, {
@@ -7511,14 +7503,6 @@
                         if (outlineCount) {
                             _this3._showUINotification(SidebarView.OUTLINE);
                         } else if (_this3.active === SidebarView.OUTLINE) {
-                            _this3.switchView(SidebarView.THUMBS);
-                        }
-                    });
-                    this.eventBus.on('attachmentsloaded', function (evt) {
-                        var attachmentsCount = evt.attachmentsCount;
-                        if (attachmentsCount) {
-                            _this3._showUINotification(SidebarView.ATTACHMENTS);
-                        } else if (_this3.active === SidebarView.ATTACHMENTS) {
                             _this3.switchView(SidebarView.THUMBS);
                         }
                     });
