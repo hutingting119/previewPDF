@@ -430,20 +430,6 @@
                 event.location = evt.location;
                 evt.source.container.dispatchEvent(event);
             });
-            eventBus.on('find', function (evt) {
-                if (evt.source === window) {
-                    return;
-                }
-                var event = document.createEvent('CustomEvent');
-                event.initCustomEvent('find' + evt.type, true, true, {
-                    query: evt.query,
-                    phraseSearch: evt.phraseSearch,
-                    caseSensitive: evt.caseSensitive,
-                    highlightAll: evt.highlightAll,
-                    findPrevious: evt.findPrevious
-                });
-                window.dispatchEvent(event);
-            });
             eventBus.on('sidebarviewchanged', function (evt) {
                 var event = document.createEvent('CustomEvent');
                 event.initCustomEvent('sidebarviewchanged', true, true, {view: evt.view});
@@ -727,9 +713,6 @@
             },
             reportTelemetry: function reportTelemetry(data) {
             },
-            createDownloadManager: function createDownloadManager() {
-                throw new Error('Not implemented: createDownloadManager');
-            },
             createPreferences: function createPreferences() {
                 throw new Error('Not implemented: createPreferences');
             },
@@ -894,8 +877,6 @@
                     _this2.pdfRenderingQueue = pdfRenderingQueue;
                     var pdfLinkService = new _pdf_link_service.PDFLinkService({eventBus: eventBus});
                     _this2.pdfLinkService = pdfLinkService;
-                    var downloadManager = _this2.externalServices.createDownloadManager();
-                    _this2.downloadManager = downloadManager;
                     var container = appConfig.mainContainer;
                     var viewer = appConfig.viewerContainer;
                     _this2.pdfViewer = new _pdf_viewer.PDFViewer({
@@ -904,7 +885,6 @@
                         eventBus: eventBus,
                         renderingQueue: pdfRenderingQueue,
                         linkService: pdfLinkService,
-                        downloadManager: downloadManager,
                         renderer: _this2.viewerPrefs['renderer'],
                         l10n: _this2.l10n,
                         enhanceTextSelection: _this2.viewerPrefs['enhanceTextSelection'],
@@ -939,10 +919,6 @@
                         eventBus: eventBus,
                         linkService: pdfLinkService
                     });
-                    _this2.pdfAttachmentViewer = new _pdf_attachment_viewer.PDFAttachmentViewer({
-                        eventBus: eventBus,
-                        downloadManager: downloadManager
-                    });
                     var sidebarConfig = Object.create(appConfig.sidebar);
                     sidebarConfig.pdfViewer = _this2.pdfViewer;
                     sidebarConfig.pdfThumbnailViewer = _this2.pdfThumbnailViewer;
@@ -959,9 +935,6 @@
 
             get pagesCount() {
                 return this.pdfDocument ? this.pdfDocument.numPages : 0;
-            },
-            get pageRotation() {
-                return this.pdfViewer.pagesRotation;
             },
             set page(val) {
                 this.pdfViewer.currentPageNumber = val;
@@ -1316,9 +1289,7 @@
                     pdfDocument.getOutline().then(function (outline) {
                         _this6.pdfOutlineViewer.render({outline: outline});
                     });
-                    pdfDocument.getAttachments().then(function (attachments) {
-                        _this6.pdfAttachmentViewer.render({attachments: attachments});
-                    });
+
                 });
                 pdfDocument.getMetadata().then(function (_ref5) {
                     var info = _ref5.info,
@@ -3213,8 +3184,6 @@
 
         var _preferences = __webpack_require__(28);
 
-        var _download_manager = __webpack_require__(12);
-
         var _genericl10n = __webpack_require__(13);
 
         var _pdfjsLib = __webpack_require__(1);
@@ -3278,9 +3247,7 @@
         }(_preferences.BasePreferences);
 
         var GenericExternalServices = Object.create(_app.DefaultExternalServices);
-        GenericExternalServices.createDownloadManager = function () {
-            return new _download_manager.DownloadManager();
-        };
+
         GenericExternalServices.createPreferences = function () {
             return new GenericPreferences();
         };
@@ -3290,7 +3257,6 @@
         _app.PDFViewerApplication.externalServices = GenericExternalServices;
     }),
      (function (module, exports, __webpack_require__) {
-
 
         var _app = __webpack_require__(4);
 
@@ -3334,11 +3300,6 @@
 
             function getL10nResourceLinks() {
                 return document.querySelectorAll('link[type="application/l10n"]');
-            }
-
-            function getL10nDictionary() {
-                var script = document.querySelector('script[type="application/l10n"]');
-                return script ? JSON.parse(script.innerHTML) : null;
             }
 
             function getTranslatableChildren(element) {
@@ -3500,35 +3461,10 @@
                 }
                 callback = callback || function _callback() {
                     };
-                clear();
                 gLanguage = lang;
                 var langLinks = getL10nResourceLinks();
                 var langCount = langLinks.length;
-                if (langCount === 0) {
-                    var dict = getL10nDictionary();
-                    if (dict && dict.locales && dict.default_locale) {
-                        console.log('using the embedded JSON directory, early way out');
-                        gL10nData = dict.locales[lang];
-                        if (!gL10nData) {
-                            var defaultLocale = dict.default_locale.toLowerCase();
-                            for (var anyCaseLang in dict.locales) {
-                                anyCaseLang = anyCaseLang.toLowerCase();
-                                if (anyCaseLang === lang) {
-                                    gL10nData = dict.locales[lang];
-                                    break;
-                                } else if (anyCaseLang === defaultLocale) {
-                                    gL10nData = dict.locales[defaultLocale];
-                                }
-                            }
-                        }
-                        callback();
-                    } else {
-                        console.log('no resource to load, early way out');
-                    }
-                    fireL10nReadyEvent(lang);
-                    gReadyState = 'complete';
-                    return;
-                }
+
                 var onResourceLoaded = null;
                 var gResourceCount = 0;
                 onResourceLoaded = function onResourceLoaded() {
@@ -3555,11 +3491,6 @@
                 }
             }
 
-            function clear() {
-                gL10nData = {};
-                gTextData = '';
-                gLanguage = '';
-            }
 
             function getPluralRules(lang) {
                 var locales2rules = {
@@ -4073,15 +4004,6 @@
     }),
     /* 11 */
     /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.DefaultAnnotationLayerFactory = exports.AnnotationLayerBuilder = undefined;
-
         var _createClass = function () {
             function defineProperties(target, props) {
                 for (var i = 0; i < props.length; i++) {
@@ -4206,123 +4128,13 @@
         exports.AnnotationLayerBuilder = AnnotationLayerBuilder;
         exports.DefaultAnnotationLayerFactory = DefaultAnnotationLayerFactory;
 
-        /***/
     }),
     /* 12 */
-    /***/ (function (module, exports, __webpack_require__) {
+   (function (module, exports, __webpack_require__) {
 
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.DownloadManager = undefined;
-
-        var _createClass = function () {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || false;
-                    descriptor.configurable = true;
-                    if ("value" in descriptor) descriptor.writable = true;
-                    Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-
-            return function (Constructor, protoProps, staticProps) {
-                if (protoProps) defineProperties(Constructor.prototype, protoProps);
-                if (staticProps) defineProperties(Constructor, staticProps);
-                return Constructor;
-            };
-        }();
-
-        var _pdfjsLib = __webpack_require__(1);
-
-        function _classCallCheck(instance, Constructor) {
-            if (!(instance instanceof Constructor)) {
-                throw new TypeError("Cannot call a class as a function");
-            }
-        }
-
-        ;
-        function _download(blobUrl, filename) {
-            var a = document.createElement('a');
-            if (a.click) {
-                a.href = blobUrl;
-                a.target = '_parent';
-                if ('download' in a) {
-                    a.download = filename;
-                }
-                (document.body || document.documentElement).appendChild(a);
-                a.click();
-                a.parentNode.removeChild(a);
-            } else {
-                if (window.top === window && blobUrl.split('#')[0] === window.location.href.split('#')[0]) {
-                    var padCharacter = blobUrl.indexOf('?') === -1 ? '?' : '&';
-                    blobUrl = blobUrl.replace(/#|$/, padCharacter + '$&');
-                }
-                window.open(blobUrl, '_parent');
-            }
-        }
-
-        var DownloadManager = function () {
-            function DownloadManager() {
-                _classCallCheck(this, DownloadManager);
-            }
-
-            _createClass(DownloadManager, [{
-                key: 'downloadUrl',
-                value: function downloadUrl(url, filename) {
-                    if (!(0, _pdfjsLib.createValidAbsoluteUrl)(url, 'http://example.com')) {
-                        return;
-                    }
-                    _download(url + '#pdfjs.action=download', filename);
-                }
-            }, {
-                key: 'downloadData',
-                value: function downloadData(data, filename, contentType) {
-                    if (navigator.msSaveBlob) {
-                        return navigator.msSaveBlob(new Blob([data], {type: contentType}), filename);
-                    }
-                    var blobUrl = (0, _pdfjsLib.createObjectURL)(data, contentType, _pdfjsLib.PDFJS.disableCreateObjectURL);
-                    _download(blobUrl, filename);
-                }
-            }, {
-                key: 'download',
-                value: function download(blob, url, filename) {
-                    if (navigator.msSaveBlob) {
-                        if (!navigator.msSaveBlob(blob, filename)) {
-                            this.downloadUrl(url, filename);
-                        }
-                        return;
-                    }
-                    if (_pdfjsLib.PDFJS.disableCreateObjectURL) {
-                        this.downloadUrl(url, filename);
-                        return;
-                    }
-                    var blobUrl = URL.createObjectURL(blob);
-                    _download(blobUrl, filename);
-                }
-            }]);
-
-            return DownloadManager;
-        }();
-
-        exports.DownloadManager = DownloadManager;
-
-        /***/
     }),
     /* 13 */
     /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.GenericL10n = undefined;
 
         var _createClass = function () {
             function defineProperties(target, props) {
@@ -4391,18 +4203,9 @@
         }();
 
         exports.GenericL10n = GenericL10n;
-
-        /***/
     }),
     /* 14 */
-    /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
+   (function (module, exports, __webpack_require__) {
         function GrabToPan(options) {
             this.element = options.element;
             this.document = options.element.ownerDocument;
@@ -4537,18 +4340,9 @@
 
         exports.GrabToPan = GrabToPan;
 
-        /***/
     }),
     /* 15 */
-    /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-
+   (function (module, exports, __webpack_require__) {
         var _createClass = function () {
             function defineProperties(target, props) {
                 for (var i = 0; i < props.length; i++) {
@@ -4693,281 +4487,17 @@
         }();
 
         exports.OverlayManager = OverlayManager;
-
-        /***/
     }),
     /* 16 */
-    /***/ (function (module, exports, __webpack_require__) {
+    (function (module, exports, __webpack_require__) {
 
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PasswordPrompt = undefined;
-
-        var _createClass = function () {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || false;
-                    descriptor.configurable = true;
-                    if ("value" in descriptor) descriptor.writable = true;
-                    Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-
-            return function (Constructor, protoProps, staticProps) {
-                if (protoProps) defineProperties(Constructor.prototype, protoProps);
-                if (staticProps) defineProperties(Constructor, staticProps);
-                return Constructor;
-            };
-        }();
-
-        var _ui_utils = __webpack_require__(0);
-
-        var _pdfjsLib = __webpack_require__(1);
-
-        function _classCallCheck(instance, Constructor) {
-            if (!(instance instanceof Constructor)) {
-                throw new TypeError("Cannot call a class as a function");
-            }
-        }
-
-        var PasswordPrompt = function () {
-            function PasswordPrompt(options, overlayManager) {
-                var _this = this;
-
-                var l10n = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _ui_utils.NullL10n;
-
-                _classCallCheck(this, PasswordPrompt);
-
-                this.overlayName = options.overlayName;
-                this.container = options.container;
-                this.label = options.label;
-                this.input = options.input;
-                this.submitButton = options.submitButton;
-                this.cancelButton = options.cancelButton;
-                this.overlayManager = overlayManager;
-                this.l10n = l10n;
-                this.updateCallback = null;
-                this.reason = null;
-                this.submitButton.addEventListener('click', this.verify.bind(this));
-                this.cancelButton.addEventListener('click', this.close.bind(this));
-                this.input.addEventListener('keydown', function (e) {
-                    if (e.keyCode === 13) {
-                        _this.verify();
-                    }
-                });
-                this.overlayManager.register(this.overlayName, this.container, this.close.bind(this), true);
-            }
-
-            _createClass(PasswordPrompt, [{
-                key: 'open',
-                value: function open() {
-                    var _this2 = this;
-
-                    this.overlayManager.open(this.overlayName).then(function () {
-                        _this2.input.focus();
-                        var promptString = void 0;
-                        if (_this2.reason === _pdfjsLib.PasswordResponses.INCORRECT_PASSWORD) {
-                            promptString = _this2.l10n.get('password_invalid', null, 'Invalid password. Please try again.');
-                        } else {
-                            promptString = _this2.l10n.get('password_label', null, 'Enter the password to open this PDF file.');
-                        }
-                        promptString.then(function (msg) {
-                            _this2.label.textContent = msg;
-                        });
-                    });
-                }
-            }, {
-                key: 'close',
-                value: function close() {
-                    var _this3 = this;
-
-                    this.overlayManager.close(this.overlayName).then(function () {
-                        _this3.input.value = '';
-                    });
-                }
-            }, {
-                key: 'verify',
-                value: function verify() {
-                    var password = this.input.value;
-                    if (password && password.length > 0) {
-                        this.close();
-                        return this.updateCallback(password);
-                    }
-                }
-            }, {
-                key: 'setUpdateCallback',
-                value: function setUpdateCallback(updateCallback, reason) {
-                    this.updateCallback = updateCallback;
-                    this.reason = reason;
-                }
-            }]);
-
-            return PasswordPrompt;
-        }();
-
-        exports.PasswordPrompt = PasswordPrompt;
-
-        /***/
     }),
     /* 17 */
-    /***/ (function (module, exports, __webpack_require__) {
+     (function (module, exports, __webpack_require__) {
 
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PDFAttachmentViewer = undefined;
-
-        var _createClass = function () {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || false;
-                    descriptor.configurable = true;
-                    if ("value" in descriptor) descriptor.writable = true;
-                    Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-
-            return function (Constructor, protoProps, staticProps) {
-                if (protoProps) defineProperties(Constructor.prototype, protoProps);
-                if (staticProps) defineProperties(Constructor, staticProps);
-                return Constructor;
-            };
-        }();
-
-        var _pdfjsLib = __webpack_require__(1);
-
-        function _classCallCheck(instance, Constructor) {
-            if (!(instance instanceof Constructor)) {
-                throw new TypeError("Cannot call a class as a function");
-            }
-        }
-
-        var PDFAttachmentViewer = function () {
-            function PDFAttachmentViewer(_ref) {
-                var container = _ref.container,
-                    eventBus = _ref.eventBus,
-                    downloadManager = _ref.downloadManager;
-
-                _classCallCheck(this, PDFAttachmentViewer);
-
-                this.attachments = null;
-                this.container = container;
-                this.eventBus = eventBus;
-                this.downloadManager = downloadManager;
-                this._renderedCapability = (0, _pdfjsLib.createPromiseCapability)();
-                this.eventBus.on('fileattachmentannotation', this._appendAttachment.bind(this));
-            }
-
-            _createClass(PDFAttachmentViewer, [{
-                key: 'reset',
-                value: function reset() {
-                    var keepRenderedCapability = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-                    this.attachments = null;
-                    this.container.textContent = '';
-                    if (!keepRenderedCapability) {
-                        this._renderedCapability = (0, _pdfjsLib.createPromiseCapability)();
-                    }
-                }
-            },
-                {
-                    key: '_bindPdfLink',
-                    value: function _bindPdfLink(button, content, filename) {
-                        if (_pdfjsLib.PDFJS.disableCreateObjectURL) {
-                            throw new Error('bindPdfLink: ' + 'Unsupported "PDFJS.disableCreateObjectURL" value.');
-                        }
-                        var blobUrl = void 0;
-                        button.onclick = function () {
-                            if (!blobUrl) {
-                                blobUrl = (0, _pdfjsLib.createObjectURL)(content, 'application/pdf');
-                            }
-                            var viewerUrl = void 0;
-                            viewerUrl = '?file=' + encodeURIComponent(blobUrl + '#' + filename);
-                            window.open(viewerUrl);
-                            return false;
-                        };
-                    }
-                }, {
-                    key: '_bindLink',
-                    value: function _bindLink(button, content, filename) {
-                        var _this = this;
-
-                        button.onclick = function () {
-                            _this.downloadManager.downloadData(content, filename, '');
-                            return false;
-                        };
-                    }
-                }, {
-                    key: 'render',
-                    value: function render(_ref2) {
-                        var attachments = _ref2.attachments,
-                            _ref2$keepRenderedCap = _ref2.keepRenderedCapability,
-                            keepRenderedCapability = _ref2$keepRenderedCap === undefined ? false : _ref2$keepRenderedCap;
-
-                        var attachmentsCount = 0;
-                        if (this.attachments) {
-                            this.reset(keepRenderedCapability === true);
-                        }
-                        this.attachments = attachments || null;
-                    }
-                }, {
-                    key: '_appendAttachment',
-                    value: function _appendAttachment(_ref3) {
-                        var _this2 = this;
-
-                        var id = _ref3.id,
-                            filename = _ref3.filename,
-                            content = _ref3.content;
-
-                        this._renderedCapability.promise.then(function () {
-                            var attachments = _this2.attachments;
-                            if (!attachments) {
-                                attachments = Object.create(null);
-                            } else {
-                                for (var name in attachments) {
-                                    if (id === name) {
-                                        return;
-                                    }
-                                }
-                            }
-                            attachments[id] = {
-                                filename: filename,
-                                content: content
-                            };
-                            _this2.render({
-                                attachments: attachments,
-                                keepRenderedCapability: true
-                            });
-                        });
-                    }
-                }]);
-
-            return PDFAttachmentViewer;
-        }();
-
-        exports.PDFAttachmentViewer = PDFAttachmentViewer;
-
-        /***/
     }),
     /* 18 */
-    /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PDFDocumentProperties = undefined;
+   (function (module, exports, __webpack_require__) {
 
         var _slicedToArray = function () {
             function sliceIterator(arr, i) {
@@ -5022,15 +4552,9 @@
             };
         }();
 
-        var _ui_utils = __webpack_require__(0);
+        // var _ui_utils = __webpack_require__(0);
 
         var _pdfjsLib = __webpack_require__(1);
-
-        function _classCallCheck(instance, Constructor) {
-            if (!(instance instanceof Constructor)) {
-                throw new TypeError("Cannot call a class as a function");
-            }
-        }
 
         var DEFAULT_FIELD_CONTENT = '-';
 
@@ -5041,8 +4565,6 @@
                     container = _ref.container,
                     closeButton = _ref.closeButton;
                 var l10n = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _ui_utils.NullL10n;
-
-                _classCallCheck(this, PDFDocumentProperties);
 
                 this.overlayName = overlayName;
                 this.fields = fields;
@@ -5228,58 +4750,13 @@
         }();
 
         exports.PDFDocumentProperties = PDFDocumentProperties;
-
-        /***/
     }),
     /* 19 */
-    /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-
-        var _createClass = function () {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || false;
-                    descriptor.configurable = true;
-                    if ("value" in descriptor) descriptor.writable = true;
-                    Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-
-            return function (Constructor, protoProps, staticProps) {
-                if (protoProps) defineProperties(Constructor.prototype, protoProps);
-                if (staticProps) defineProperties(Constructor, staticProps);
-                return Constructor;
-            };
-        }();
-
-        var _pdf_find_controller = __webpack_require__(7);
-
-        var _ui_utils = __webpack_require__(0);
-
-        function _classCallCheck(instance, Constructor) {
-            if (!(instance instanceof Constructor)) {
-                throw new TypeError("Cannot call a class as a function");
-            }
-        }
+    (function (module, exports, __webpack_require__) {
 
     }),
     /* 20 */
-    /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PDFHistory = undefined;
+    (function (module, exports, __webpack_require__) {
 
         var _dom_events = __webpack_require__(2);
 
@@ -5581,18 +5058,10 @@
         };
         exports.PDFHistory = PDFHistory;
 
-        /***/
     }),
     /* 21 */
-    /***/ (function (module, exports, __webpack_require__) {
+    (function (module, exports, __webpack_require__) {
 
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PDFOutlineViewer = undefined;
 
         var _createClass = function () {
             function defineProperties(target, props) {
@@ -5780,20 +5249,9 @@
         }();
 
         exports.PDFOutlineViewer = PDFOutlineViewer;
-
-        /***/
     }),
     /* 22 */
-    /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PDFPageView = undefined;
-
+    (function (module, exports, __webpack_require__) {
         var _createClass = function () {
             function defineProperties(target, props) {
                 for (var i = 0; i < props.length; i++) {
@@ -6268,18 +5726,9 @@
 
         exports.PDFPageView = PDFPageView;
 
-        /***/
     }),
     /* 23 */
     /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PDFPresentationMode = undefined;
 
         var _createClass = function () {
             function defineProperties(target, props) {
@@ -6619,18 +6068,9 @@
 
         exports.PDFPresentationMode = PDFPresentationMode;
 
-        /***/
     }),
     /* 24 */
-    /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PDFSidebar = exports.SidebarView = undefined;
+     (function (module, exports, __webpack_require__) {
 
         var _createClass = function () {
             function defineProperties(target, props) {
@@ -6652,7 +6092,6 @@
 
         var _ui_utils = __webpack_require__(0);
 
-        var _pdf_rendering_queue = __webpack_require__(3);
 
         function _classCallCheck(instance, Constructor) {
             if (!(instance instanceof Constructor)) {
@@ -6660,7 +6099,6 @@
             }
         }
 
-        var UI_NOTIFICATION_CLASS = 'pdfSidebarNotification';
         var SidebarView = {
             NONE: 0,
             THUMBS: 1,
@@ -6905,19 +6343,10 @@
 
         exports.SidebarView = SidebarView;
         exports.PDFSidebar = PDFSidebar;
-
-        /***/
     }),
     /* 25 */
-    /***/ (function (module, exports, __webpack_require__) {
+     (function (module, exports, __webpack_require__) {
 
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PDFThumbnailView = undefined;
 
         var _createClass = function () {
             function defineProperties(target, props) {
@@ -7289,19 +6718,9 @@
         }();
 
         exports.PDFThumbnailView = PDFThumbnailView;
-
-        /***/
     }),
     /* 26 */
-    /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PDFThumbnailViewer = undefined;
+    (function (module, exports, __webpack_require__) {
 
         var _createClass = function () {
             function defineProperties(target, props) {
@@ -7521,18 +6940,9 @@
 
         exports.PDFThumbnailViewer = PDFThumbnailViewer;
 
-        /***/
     }),
     /* 27 */
-    /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.PDFViewer = exports.PresentationModeState = undefined;
+    (function (module, exports, __webpack_require__) {
 
         var _createClass = function () {
             function defineProperties(target, props) {
@@ -7566,7 +6976,6 @@
 
         var _pdf_link_service = __webpack_require__(5);
 
-        var _text_layer_builder = __webpack_require__(30);
 
         function _classCallCheck(instance, Constructor) {
             if (!(instance instanceof Constructor)) {
@@ -8333,21 +7742,10 @@
             return PDFViewer;
         }();
 
-        exports.PresentationModeState = PresentationModeState;
         exports.PDFViewer = PDFViewer;
-
-        /***/
     }),
     /* 28 */
-    /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.BasePreferences = undefined;
+    (function (module, exports, __webpack_require__) {
 
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
             return typeof obj;
@@ -8522,99 +7920,17 @@
 
         exports.BasePreferences = BasePreferences;
 
-        /***/
     }),
     /* 29 */
     /***/ (function (module, exports, __webpack_require__) {
 
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-
-        var _createClass = function () {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || false;
-                    descriptor.configurable = true;
-                    if ("value" in descriptor) descriptor.writable = true;
-                    Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-
-            return function (Constructor, protoProps, staticProps) {
-                if (protoProps) defineProperties(Constructor.prototype, protoProps);
-                if (staticProps) defineProperties(Constructor, staticProps);
-                return Constructor;
-            };
-        }();
-
-        var _pdf_cursor_tools = __webpack_require__(6);
-
-        var _ui_utils = __webpack_require__(0);
-
-        function _classCallCheck(instance, Constructor) {
-            if (!(instance instanceof Constructor)) {
-                throw new TypeError("Cannot call a class as a function");
-            }
-        }
     }),
     /* 30 */
-    /***/ (function (module, exports, __webpack_require__) {
+     (function (module, exports, __webpack_require__) {
 
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-
-        var _createClass = function () {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || false;
-                    descriptor.configurable = true;
-                    if ("value" in descriptor) descriptor.writable = true;
-                    Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-
-            return function (Constructor, protoProps, staticProps) {
-                if (protoProps) defineProperties(Constructor.prototype, protoProps);
-                if (staticProps) defineProperties(Constructor, staticProps);
-                return Constructor;
-            };
-        }();
-
-        var _dom_events = __webpack_require__(2);
-
-        var _pdfjsLib = __webpack_require__(1);
-
-        function _classCallCheck(instance, Constructor) {
-            if (!(instance instanceof Constructor)) {
-                throw new TypeError("Cannot call a class as a function");
-            }
-        }
-
-        var EXPAND_DIVS_TIMEOUT = 300;
-
-
-        /***/
     }),
     /* 31 */
     /***/ (function (module, exports, __webpack_require__) {
-
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        exports.Toolbar = undefined;
 
         var _createClass = function () {
             function defineProperties(target, props) {
@@ -8724,7 +8040,6 @@
                 key: '_localized',
                 value: function _localized() {
                     this._wasLocalized = true;
-                    this._adjustScaleWidth();
                     this._updateUIState(true);
                 }
             }, {
@@ -8778,12 +8093,6 @@
                         pageNumberInput.classList.remove(PAGE_NUMBER_LOADING_INDICATOR);
                     }
                 }
-            }, {
-                key: '_adjustScaleWidth',
-                value: function _adjustScaleWidth() {
-                    _ui_utils.animationStarted.then(function () {
-                    });
-                }
             }]);
 
             return Toolbar;
@@ -8796,12 +8105,6 @@
     /* 32 */
     /***/ (function (module, exports, __webpack_require__) {
 
-        "use strict";
-
-
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
 
         var _createClass = function () {
             function defineProperties(target, props) {
@@ -8938,15 +8241,10 @@
 
         exports.ViewHistory = ViewHistory;
 
-        /***/
     }),
     /* 33 */
-    /***/ (function (module, exports, __webpack_require__) {
+    (function (module, exports, __webpack_require__) {
 
-        "use strict";
-
-
-        var DEFAULT_URL = 'test.pdf';
         var pdfjsWebApp = void 0;
         {
             pdfjsWebApp = __webpack_require__(4);
@@ -8999,7 +8297,7 @@
                     }
                 },
                 openFileInputName: 'fileInput',
-                defaultUrl: "test.pdf"
+                defaultUrl: "test2.pdf"
             };
         }
 
