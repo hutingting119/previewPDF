@@ -1802,16 +1802,12 @@
         };
         var validateFileURL = void 0;
         {
-            var HOSTED_VIEWER_ORIGINS = ['null', 'http://mozilla.github.io', 'https://mozilla.github.io'];
             validateFileURL = function validateFileURL(file) {
                 if (file === undefined) {
                     return;
                 }
                 try {
                     var viewerOrigin = new URL(window.location.href).origin || 'null';
-                    if (HOSTED_VIEWER_ORIGINS.indexOf(viewerOrigin) >= 0) {
-                        return;
-                    }
                     var fileOrigin = new URL(file, window.location.href).origin;
                     if (fileOrigin !== viewerOrigin) {
                         throw new Error('file origin does not match viewer\'s');
@@ -5484,12 +5480,8 @@
                         this._renderedCapability = (0, _pdfjsLib.createPromiseCapability)();
                     }
                 }
-            }, {
-                key: '_dispatchEvent',
-                value: function _dispatchEvent(attachmentsCount) {
-                    this._renderedCapability.resolve();
-                }
-            }, {
+            },
+                {
                 key: '_bindPdfLink',
                 value: function _bindPdfLink(button, content, filename) {
                     if (_pdfjsLib.PDFJS.disableCreateObjectURL) {
@@ -5528,30 +5520,6 @@
                         this.reset(keepRenderedCapability === true);
                     }
                     this.attachments = attachments || null;
-                    if (!attachments) {
-                        this._dispatchEvent(attachmentsCount);
-                        return;
-                    }
-                    var names = Object.keys(attachments).sort(function (a, b) {
-                        return a.toLowerCase().localeCompare(b.toLowerCase());
-                    });
-                    attachmentsCount = names.length;
-                    for (var i = 0; i < attachmentsCount; i++) {
-                        var item = attachments[names[i]];
-                        var filename = (0, _pdfjsLib.removeNullCharacters)((0, _pdfjsLib.getFilenameFromUrl)(item.filename));
-                        var div = document.createElement('div');
-                        div.className = 'attachmentsItem';
-                        var button = document.createElement('button');
-                        button.textContent = filename;
-                        if (/\.pdf$/i.test(filename) && !_pdfjsLib.PDFJS.disableCreateObjectURL) {
-                            this._bindPdfLink(button, item.content, filename);
-                        } else {
-                            this._bindLink(button, item.content, filename);
-                        }
-                        div.appendChild(button);
-                        this.container.appendChild(div);
-                    }
-                    this._dispatchEvent(attachmentsCount);
                 }
             }, {
                 key: '_appendAttachment',
