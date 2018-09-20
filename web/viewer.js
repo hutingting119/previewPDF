@@ -9394,14 +9394,10 @@
                     var scaleValue = (this.pageScaleValue || this.pageScale).toString();
                     var scale = this.pageScale;
                     if (resetNumPages) {
-                        if (this.hasPageLabels) {
-                            // items.pageNumber.type = 'text';
-                        } else {
-                            items.pageNumber.type = 'number';
-                            this.l10n.get('of_pages', {pagesCount: pagesCount}, 'of {{pagesCount}}').then(function (msg) {
-                                items.numPages.textContent = msg;
-                            });
-                        }
+                        items.pageNumber.type = 'number';
+                        this.l10n.get('of_pages', {pagesCount: pagesCount}, 'of {{pagesCount}}').then(function (msg) {
+                            items.numPages.textContent = msg;
+                        });
                         items.pageNumber.max = pagesCount;
                     }
                     if (this.hasPageLabels) {
