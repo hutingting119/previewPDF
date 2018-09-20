@@ -112,15 +112,6 @@
             SVG: 'svg'
         };
 
-        function formatL10nValue(text, args) {
-            if (!args) {
-                return text;
-            }
-            return text.replace(/\{\{\s*(\w+)\s*\}\}/g, function (all, name) {
-                return name in args ? args[name] : '{{' + name + '}}';
-            });
-        }
-
         var NullL10n = {
             get: function get(property, args, fallback) {
                 return Promise.resolve(formatL10nValue(fallback, args));
@@ -516,7 +507,6 @@
                     }
                     this.visible = false;
                     this.bar.classList.add('hidden');
-                    document.body.classList.remove('loadingInProgress');
                 }
             }, {
                 key: 'show',
@@ -525,7 +515,6 @@
                         return;
                     }
                     this.visible = true;
-                    document.body.classList.add('loadingInProgress');
                     this.bar.classList.remove('hidden');
                 }
             }, {
@@ -667,7 +656,6 @@
             eventBus.on('sidebarviewchanged', function (evt) {
                 var event = document.createEvent('CustomEvent');
                 event.initCustomEvent('sidebarviewchanged', true, true, {view: evt.view});
-                evt.source.outerContainer.dispatchEvent(event);
             });
             eventBus.on('pagemode', function (evt) {
                 var event = document.createEvent('CustomEvent');
@@ -7336,7 +7324,6 @@
                 this.pdfThumbnailViewer = options.pdfThumbnailViewer;
                 this.pdfOutlineViewer = options.pdfOutlineViewer;
                 this.mainContainer = options.mainContainer;
-                this.outerContainer = options.outerContainer;
                 this.eventBus = options.eventBus;
                 this.disableNotification = options.disableNotification || false;
                 this.l10n = l10n;
@@ -7419,7 +7406,6 @@
                     }
                     this.isOpen = true;
                     this.toggleButton.classList.add('toggled');
-                    this.outerContainer.classList.add('sidebarMoving');
                     this.outerContainer.classList.add('sidebarOpen');
                     if (this.active === SidebarView.THUMBS) {
                     }
@@ -7434,8 +7420,6 @@
                         return;
                     }
                     this.isOpen = false;
-                    this.outerContainer.classList.add('sidebarMoving');
-                    this.outerContainer.classList.remove('sidebarOpen');
                     this._forceRendering();
                     this._dispatchEvent();
                 }
@@ -7519,7 +7503,6 @@
 
                     this.mainContainer.addEventListener('transitionend', function (evt) {
                         if (evt.target === _this3.mainContainer) {
-                            _this3.outerContainer.classList.remove('sidebarMoving');
                         }
                     });
 
@@ -9412,7 +9395,7 @@
                     var scale = this.pageScale;
                     if (resetNumPages) {
                         if (this.hasPageLabels) {
-                            items.pageNumber.type = 'text';
+                            // items.pageNumber.type = 'text';
                         } else {
                             items.pageNumber.type = 'number';
                             this.l10n.get('of_pages', {pagesCount: pagesCount}, 'of {{pagesCount}}').then(function (msg) {
@@ -9537,17 +9520,6 @@
             }
 
             _createClass(ViewHistory, [{
-                key: '_writeToStorage',
-                value: function _writeToStorage() {
-                    var _this2 = this;
-
-                    return new Promise(function (resolve) {
-                        var databaseStr = JSON.stringify(_this2.database);
-                        localStorage.setItem('pdfjs.history', databaseStr);
-                        resolve();
-                    });
-                }
-            }, {
                 key: '_readFromStorage',
                 value: function _readFromStorage() {
                     return new Promise(function (resolve) {
@@ -9661,7 +9633,6 @@
                 },
                 sidebar: {
                     mainContainer: document.getElementById('mainContainer'),
-                    outerContainer: document.getElementById('outerContainer'),
                     thumbnailView: document.getElementById('thumbnailView'),
                 },
                 documentProperties: {
@@ -9684,7 +9655,7 @@
                     }
                 },
                 openFileInputName: 'fileInput',
-                defaultUrl: "test2.pdf"
+                defaultUrl: "test.pdf"
             };
         }
 

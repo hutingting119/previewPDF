@@ -26,30 +26,31 @@
       <file leaf-file-name="viewer.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/viewer.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-126">
-              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+            <state relative-caret-position="450">
+              <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="viewer.css" pinned="false" current-in-tab="true">
+      <file leaf-file-name="viewer.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/viewer.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="203">
+              <caret line="254" column="0" selection-start-line="254" selection-start-column="0" selection-end-line="254" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="viewer.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="viewer.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/web/viewer.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="195">
-              <caret line="1820" column="86" selection-start-line="1820" selection-start-column="84" selection-end-line="1820" selection-end-column="86" />
+              <caret line="1808" column="57" selection-start-line="1808" selection-start-column="55" selection-end-line="1808" selection-end-column="57" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
+                <element signature="e#415449#418710#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -62,9 +63,9 @@
       <list>
         <option value="$PROJECT_DIR$/build/pdf.js" />
         <option value="$PROJECT_DIR$/build/pdf.worker.js" />
+        <option value="$PROJECT_DIR$/web/viewer.css" />
         <option value="$PROJECT_DIR$/web/viewer.html" />
         <option value="$PROJECT_DIR$/web/viewer.js" />
-        <option value="$PROJECT_DIR$/web/viewer.css" />
       </list>
     </option>
   </component>
@@ -233,23 +234,23 @@
       <workItem from="1536713597740" duration="1225000" />
       <workItem from="1536754074449" duration="171000" />
       <workItem from="1537328599010" duration="15828000" />
-      <workItem from="1537404523357" duration="3524000" />
+      <workItem from="1537404523357" duration="6938000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="25178000" />
+    <option name="totallyTimeSpent" value="28592000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="-4" width="1299" height="772" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22178683" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3287037" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3287037" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -302,6 +303,7 @@
           <caret line="2063" column="0" selection-start-line="2063" selection-start-column="0" selection-end-line="2063" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
+            <element signature="e#415449#418710#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -344,6 +346,7 @@
           <caret line="8292" column="9" selection-start-line="8292" selection-start-column="9" selection-end-line="8292" selection-end-column="9" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
+            <element signature="e#415449#418710#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -386,6 +389,7 @@
           <caret line="8292" column="9" selection-start-line="8292" selection-start-column="9" selection-end-line="8292" selection-end-column="9" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
+            <element signature="e#415449#418710#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -396,26 +400,34 @@
     <entry file="file://$PROJECT_DIR$/web/debugger.js" />
     <entry file="file://$PROJECT_DIR$/build/pdf.js.map" />
     <entry file="file://$PROJECT_DIR$/web/images/findbarButton-next.png" />
-    <entry file="file://$PROJECT_DIR$/build/pdf.worker.js">
+    <entry file="file://$PROJECT_DIR$/build/pdf.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="624675">
-          <caret line="41658" column="3" selection-start-line="41658" selection-start-column="3" selection-end-line="41658" selection-end-column="3" />
+        <state relative-caret-position="375">
+          <caret line="13906" column="27" selection-start-line="13906" selection-start-column="27" selection-end-line="13906" selection-end-column="27" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build/pdf.js">
+    <entry file="file://$PROJECT_DIR$/build/pdf.worker.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="201410">
-          <caret line="13906" column="27" selection-start-line="13906" selection-start-column="27" selection-end-line="13906" selection-end-column="27" />
+        <state relative-caret-position="375">
+          <caret line="41658" column="3" selection-start-line="41658" selection-start-column="3" selection-end-line="41658" selection-end-column="3" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/web/viewer.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-126">
-          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+        <state relative-caret-position="450">
+          <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/viewer.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="254" column="0" selection-start-line="254" selection-start-column="0" selection-end-line="254" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -423,18 +435,11 @@
     <entry file="file://$PROJECT_DIR$/web/viewer.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
-          <caret line="1820" column="86" selection-start-line="1820" selection-start-column="84" selection-end-line="1820" selection-end-column="86" />
+          <caret line="1808" column="57" selection-start-line="1808" selection-start-column="55" selection-end-line="1808" selection-end-column="57" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
+            <element signature="e#415449#418710#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/viewer.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>

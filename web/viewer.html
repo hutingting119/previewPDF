@@ -1,50 +1,51 @@
 <!DOCTYPE html>
 <html dir="ltr" mozdisallowselectionprint moznomarginboxes>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="google" content="notranslate">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>PDF.js viewer</title>
-
 
     <link rel="stylesheet" href="viewer.css">
     <link rel="resource" type="application/l10n" href="locale/locale.properties">
     <script src="../build/pdf.js"></script>
-
     <script src="viewer.js"></script>
 
 </head>
 
-<body tabindex="1" class="loadingInProgress">
-<div id="outerContainer">
-    <div id="mainContainer">
-        <div class="toolbar">
-            <div id="toolbarContainer">
-                <div id="toolbarViewer">
-                    <div id="toolbarViewerLeft">
-                        <div class="toolbarButtonSpacer"></div>
-                        <div class="splitToolbarButton hiddenSmallView">
-                            <button class="toolbarButton pageUp" title="Previous Page" id="previous" tabindex="13"
-                                    data-l10n-id="previous">shang
-                                <span data-l10n-id="previous_label">Previous</span>
-                            </button>
-                            <div class="splitToolbarButtonSeparator"></div>
-                            <button class="toolbarButton pageDown" title="Next Page" id="next" tabindex="14"
-                                    data-l10n-id="next">xia
-                                <span data-l10n-id="next_label">Next</span>
-                            </button>
+<body>
+
+<div>
+    <div>
+        <div>
+            <div id="mainContainer">
+                <div class="toolbar">
+                    <div id="toolbarContainer">
+                        <div id="toolbarViewer">
+                            <div id="toolbarViewerLeft">
+                                <div class="toolbarButtonSpacer"></div>
+                                <div class="splitToolbarButton hiddenSmallView">
+                                    <button class="toolbarButton pageUp" title="Previous Page" id="previous"
+                                            tabindex="13"
+                                            data-l10n-id="previous">shang
+                                        <span data-l10n-id="previous_label">Previous</span>
+                                    </button>
+                                    <div class="splitToolbarButtonSeparator"></div>
+                                    <button class="toolbarButton pageDown" title="Next Page" id="next" tabindex="14"
+                                            data-l10n-id="next">xia
+                                        <span data-l10n-id="next_label">Next</span>
+                                    </button>
+                                </div>
+                                <input type="number" id="pageNumber" class="toolbarField pageNumber" title="Page"
+                                       value="1"
+                                       size="4" min="1" tabindex="15" data-l10n-id="page">
+                                <span id="numPages" class="toolbarLabel"></span>
+                            </div>
                         </div>
-                        <input type="number" id="pageNumber" class="toolbarField pageNumber" title="Page" value="1"
-                               size="4" min="1" tabindex="15" data-l10n-id="page">
-                        <span id="numPages" class="toolbarLabel"></span>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div id="viewerContainer" tabindex="0">
-            <div id="viewer" class="pdfViewer"></div>
+                <div id="viewerContainer" tabindex="0">
+                    <div id="viewer" class="pdfViewer"></div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
