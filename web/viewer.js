@@ -747,14 +747,12 @@
             pdfAttachmentViewer: null,
             pdfCursorTools: null,
             store: null,
-            downloadManager: null,
             overlayManager: null,
             preferences: null,
             toolbar: null,
             eventBus: null,
             l10n: null,
             isInitialViewSet: false,
-            downloadComplete: false,
             viewerPrefs: {
                 sidebarViewOnLoad: _pdf_sidebar.SidebarView.NONE,
                 pdfBugEnabled: false,
@@ -992,7 +990,6 @@
                 }
                 this.store = null;
                 this.isInitialViewSet = false;
-                this.downloadComplete = false;
                 this.pdfSidebar.reset();
                 this.pdfOutlineViewer.reset();
                 this.pdfAttachmentViewer.reset();
@@ -1069,28 +1066,6 @@
                     });
                 });
             },
-            download: function download() {
-                var _this4 = this;
-
-                function downloadByUrl() {
-                    downloadManager.downloadUrl(url, filename);
-                }
-
-                var url = this.baseUrl;
-                var filename = (0, _ui_utils.getPDFFileNameFromURL)(this.url);
-                var downloadManager = this.downloadManager;
-                downloadManager.onerror = function (err) {
-                    _this4.error('PDF failed to download: ' + err);
-                };
-                if (!this.pdfDocument || !this.downloadComplete) {
-                    downloadByUrl();
-                    return;
-                }
-                this.pdfDocument.getData().then(function (data) {
-                    var blob = (0, _pdfjsLib.createBlob)(data, 'application/pdf');
-                    downloadManager.download(blob, url, filename);
-                }).catch(downloadByUrl);
-            },
             fallback: function fallback(featureId) {
             },
             error: function error(message, moreInfo) {
@@ -1131,9 +1106,6 @@
             progress: function progress(level) {
                 var _this5 = this;
 
-                if (this.downloadComplete) {
-                    return;
-                }
                 var percent = Math.round(level * 100);
             },
             load: function load(pdfDocument, scale) {
@@ -1141,12 +1113,6 @@
 
                 scale = scale || _ui_utils.UNKNOWN_SCALE;
                 this.pdfDocument = pdfDocument;
-                pdfDocument.getDownloadInfo().then(function () {
-                    _this6.downloadComplete = true;
-                    firstPagePromise.then(function () {
-                        _this6.eventBus.dispatch('documentload', {source: _this6});
-                    });
-                });
                 var pageModePromise = pdfDocument.getPageMode().catch(function () {
                 });
                 this.toolbar.setPagesCount(pdfDocument.numPages, false);
@@ -1785,7 +1751,6 @@
                 PDFViewerApplication.setTitleUsingUrl(file.name);
                 var appConfig = PDFViewerApplication.appConfig;
                 appConfig.toolbar.viewBookmark.setAttribute('hidden', 'true');
-                appConfig.toolbar.download.setAttribute('hidden', 'true');
             };
         }
         function webViewerPresentationMode() {
@@ -1934,14 +1899,6 @@
                             handled = true;
                             ensureViewerFocused = true;
                         }
-                        break;
-                }
-            }
-            if (cmd === 1 || cmd === 8) {
-                switch (evt.keyCode) {
-                    case 83:
-                        PDFViewerApplication.download();
-                        handled = true;
                         break;
                 }
             }
@@ -3538,7 +3495,6 @@
                 var pageDiv = _ref.pageDiv,
                     pdfPage = _ref.pdfPage,
                     linkService = _ref.linkService,
-                    downloadManager = _ref.downloadManager,
                     _ref$renderInteractiv = _ref.renderInteractiveForms,
                     renderInteractiveForms = _ref$renderInteractiv === undefined ? false : _ref$renderInteractiv,
                     _ref$l10n = _ref.l10n,
@@ -3549,7 +3505,6 @@
                 this.pageDiv = pageDiv;
                 this.pdfPage = pdfPage;
                 this.linkService = linkService;
-                this.downloadManager = downloadManager;
                 this.renderInteractiveForms = renderInteractiveForms;
                 this.l10n = l10n;
                 this.div = null;
@@ -3570,7 +3525,6 @@
                             page: _this.pdfPage,
                             renderInteractiveForms: _this.renderInteractiveForms,
                             linkService: _this.linkService,
-                            downloadManager: _this.downloadManager
                         };
                         if (_this.div) {
                             _pdfjsLib.AnnotationLayer.update(parameters);
@@ -4123,7 +4077,6 @@
                                 'pageCount': _this.pdfDocument.numPages
                             });
                             _this._updateUI();
-                            return _this.pdfDocument.getDownloadInfo();
                         }).then(function (_ref5) {
                             var length = _ref5.length;
 
@@ -6531,7 +6484,6 @@
                 this.viewer = options.viewer || options.container.firstElementChild;
                 this.eventBus = options.eventBus || (0, _dom_events.getGlobalEventBus)();
                 this.linkService = options.linkService || new _pdf_link_service.SimpleLinkService();
-                this.downloadManager = options.downloadManager || null;
                 this.removePageBorders = options.removePageBorders || false;
                 this.enhanceTextSelection = options.enhanceTextSelection || false;
                 this.renderInteractiveForms = options.renderInteractiveForms || false;
@@ -7090,7 +7042,6 @@
                             pdfPage: pdfPage,
                             renderInteractiveForms: renderInteractiveForms,
                             linkService: this.linkService,
-                            downloadManager: this.downloadManager,
                             l10n: l10n
                         });
                     }
@@ -7761,7 +7712,6 @@
                     previous: document.getElementById('previous'),
                     next: document.getElementById('next'),
                     presentationModeButton: document.getElementById('presentationMode'),
-                    download: document.getElementById('download'),
                     viewBookmark: document.getElementById('viewBookmark')
                 },
                 sidebar: {
